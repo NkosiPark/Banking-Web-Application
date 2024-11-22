@@ -51,9 +51,9 @@
                 <tr>
                     <td>{{ transaction.timestamp }}</td>
                     <td>{{ transaction.type }}</td>
-                    <td>${{ transaction.amount }}</td>
+                    <td>R{{ transaction.amount }}</td>
                     <td>{{ transaction.details }}</td>
-                    <td>${{ transaction.balance_after }}</td>
+                    <td>R{{ transaction.balance_after }}</td>
                 </tr>
                 {% else %}
                 <tr>
