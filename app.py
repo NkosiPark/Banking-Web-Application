@@ -259,6 +259,45 @@ def export_transactions():
     response.headers["Content-Type"] = "text/csv"
     return response
 
+@app.route("/profile", methods=["GET", "POST"])
+def profile():
+    if "user" not in session:
+        flash("Please log in to access your profile.")
+        return redirect("/login")
+
+    user = UserModel.get_user(session["user"]["username"])
+    if not user:
+        flash("User not found. Please log in again.")
+        return redirect("/logout")
+
+    if request.method == "POST":
+        # Get form data
+        new_name = request.form.get("name")
+        current_password = request.form.get("current_password")
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+
+        # Update name
+        if new_name and new_name != user["name"]:
+            UserModel.update_user(user["username"], {"name": new_name})
+            flash("Name updated successfully.")
+            session["user"]["name"] = new_name
+
+        # Change password
+        if current_password and new_password and confirm_password:
+            if user["password_hash"] != UserModel.hash_password(current_password):
+                flash("Current password is incorrect.")
+            elif new_password != confirm_password:
+                flash("New password and confirm password do not match.")
+            elif len(new_password) < 8:
+                flash("New password must be at least 8 characters.")
+            else:
+                UserModel.update_user(user["username"], {"password_hash": UserModel.hash_password(new_password)})
+                flash("Password updated successfully.")
+
+    # Fetch updated user details
+    updated_user = UserModel.get_user(session["user"]["username"])
+    return render_template("profile.html", user=updated_user)
 
 if __name__ == "__main__":
     app.run(debug=True)
