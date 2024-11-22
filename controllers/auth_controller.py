@@ -103,30 +103,4 @@ class AuthController:
         return redirect("/login")
 
 
-    @staticmethod
-def update_user(username, updates):
-    """Update specific fields for a user."""
-    UserModel.ensure_database_exists()
-    lines = []
-    try:
-        with open(UserModel.db_path, "r") as file:
-            for line in file:
-                data = line.strip().split(",")
-                if data[6] == username:  # Username is the 7th field
-                    data = [
-                        updates.get("name", data[0]),
-                        data[1],  # Surname remains the same
-                        data[2],  # Phone remains the same
-                        data[3],  # ID number remains the same
-                        data[4],  # Email remains the same
-                        data[5],  # Username remains the same
-                        updates.get("password_hash", data[6]),  # Update password hash if provided
-                        data[7],  # Balance remains the same
-                    ]
-                lines.append(",".join(data))
-
-        with open(UserModel.db_path, "w") as file:
-            for line in lines:
-                file.write(line + "\n")
-    except Exception as e:
-        print(f"Error updating user: {e}")
+   
